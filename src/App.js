@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Login from "./pages/Login";
+import AdminDashboard from "./pages/AdminDashboard";
+import VerifierPanel from "./pages/VerifierPanel";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+  const [role, setRole] = useState(null);
+
+  if (!role)
+    return <Login setRole={setRole} />;
+
+  if (role === "admin")
+    return <AdminDashboard />;
+
+  return <VerifierPanel />;
 }
 
 export default App;
