@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://rangrass-backend.onrender.com");
 
 export default function VerifierPanel() {
 
@@ -19,7 +19,7 @@ export default function VerifierPanel() {
   const verify = async (num) => {
 
     const res = await axios.post(
-      "http://localhost:5000/verify/verify",
+      "https://rangrass-backend.onrender.com/verify/verify",
       { ticketNumber: num }
     );
 

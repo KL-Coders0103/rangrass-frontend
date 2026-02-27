@@ -20,11 +20,11 @@ export default function AdminDashboard() {
   const load = async () => {
 
     const l = await axios.get(
-      "http://localhost:5000/admin/unsold"
+      "https://rangrass-backend.onrender.com/admin/unsold"
     );
 
     const s = await axios.get(
-      "http://localhost:5000/admin/sold"
+      "https://rangrass-backend.onrender.com/admin/sold"
     );
 
     setListed(l.data);
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   const createSingle = async () => {
 
     await axios.post(
-      "http://localhost:5000/admin/create-single",
+      "https://rangrass-backend.onrender.com/admin/create-single",
       { ticketNumber: ticket, category }
     );
 
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
   const createSeries = async () => {
 
     await axios.post(
-      "http://localhost:5000/admin/create-series",
+      "https://rangrass-backend.onrender.com/admin/create-series",
       { start, end, category }
     );
 
@@ -82,7 +82,7 @@ export default function AdminDashboard() {
       return;
 
     await axios.post(
-      "http://localhost:5000/admin/sell",
+      "https://rangrass-backend.onrender.com/admin/sell",
       { ticketNumbers: selectedListed }
     );
 
@@ -100,7 +100,7 @@ export default function AdminDashboard() {
       return;
 
     await axios.post(
-      "http://localhost:5000/admin/unsell",
+      "https://rangrass-backend.onrender.com/admin/unsell",
       { ticketNumbers: selectedSold }
     );
 
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
   const exportExcel = async () => {
 
     const res = await axios.get(
-      "http://localhost:5000/admin/export",
+      "https://rangrass-backend.onrender.com/admin/export",
       { responseType: "blob" }
     );
 
