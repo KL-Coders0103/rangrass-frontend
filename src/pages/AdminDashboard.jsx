@@ -56,13 +56,11 @@ export default function AdminDashboard() {
   const sell = async () => {
 
     if (!selectedListed.length) return;
-
     if (!window.confirm("Sell selected tickets?")) return;
 
-    await axios.post(
-      `${API}/admin/sell`,
-      { ticketNumbers: selectedListed }
-    );
+    await axios.post(`${API}/admin/sell`, {
+      ticketNumbers: selectedListed
+    });
 
     setSelectedListed([]);
     load();
@@ -73,16 +71,33 @@ export default function AdminDashboard() {
   const revert = async () => {
 
     if (!selectedSold.length) return;
-
     if (!window.confirm("Revert tickets?")) return;
 
-    await axios.post(
-      `${API}/admin/unsell`,
-      { ticketNumbers: selectedSold }
-    );
+    await axios.post(`${API}/admin/unsell`, {
+      ticketNumbers: selectedSold
+    });
 
     setSelectedSold([]);
     load();
+  };
+
+
+  // ================= EXCEL =================
+  const exportExcel = async () => {
+
+    const res = await axios.get(
+      `${API}/admin/export`,
+      { responseType: "blob" }
+    );
+
+    const url = window.URL.createObjectURL(
+      new Blob([res.data])
+    );
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "tickets.xlsx";
+    link.click();
   };
 
 
@@ -95,7 +110,7 @@ export default function AdminDashboard() {
           👑 Admin Control Panel
         </h1>
 
-        {/* STATS */}
+        {/* 📊 STATS */}
         {stats && (
           <div className="bg-white p-6 rounded-xl shadow mb-6">
 
@@ -104,23 +119,20 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 gap-4">
 
               <div className="bg-gray-100 p-4 rounded text-center">
-                <p className="text-lg">Listed</p>
+                <p>Listed</p>
                 <p className="text-2xl font-bold">{stats.listed}</p>
               </div>
 
               <div className="bg-yellow-200 p-4 rounded text-center">
-                <p className="text-lg">Sold</p>
+                <p>Sold</p>
                 <p className="text-2xl font-bold">{stats.sold}</p>
               </div>
 
             </div>
 
-            {/* CATEGORY */}
+            {/* Category wise */}
             <div className="mt-6">
-
-              <h3 className="font-bold mb-2">
-                Category Wise
-              </h3>
+              <h3 className="font-bold mb-2">Category Wise</h3>
 
               {stats.byCategory.map(c => (
                 <div
@@ -131,27 +143,34 @@ export default function AdminDashboard() {
                   <span>{c._count}</span>
                 </div>
               ))}
-
             </div>
 
           </div>
         )}
 
-        {/* NAV BUTTONS */}
+        {/* 📥 EXCEL */}
+        <button
+          className="bg-blue-600 text-white w-full py-3 rounded mb-6"
+          onClick={exportExcel}
+        >
+          📥 Download Excel
+        </button>
+
+        {/* NAV */}
         <div className="grid grid-cols-2 gap-4">
 
           <button
             className="bg-yellow-500 text-white py-6 rounded-xl text-xl font-bold"
             onClick={() => setPage("sell")}
           >
-            💰 SELL TICKETS
+            💰 SELL
           </button>
 
           <button
             className="bg-orange-600 text-white py-6 rounded-xl text-xl font-bold"
             onClick={() => setPage("revert")}
           >
-            🔄 REVERT TICKETS
+            🔄 REVERT
           </button>
 
         </div>
@@ -166,7 +185,7 @@ export default function AdminDashboard() {
       <div className="p-4">
 
         <button
-          className="mb-4 text-white"
+          className="text-white mb-4"
           onClick={() => setPage("home")}
         >
           ← Back
@@ -176,7 +195,6 @@ export default function AdminDashboard() {
           Sell Tickets
         </h2>
 
-        {/* SEARCH */}
         <input
           className="border p-3 rounded w-full mb-4"
           placeholder="Search by number or category"
@@ -186,45 +204,26 @@ export default function AdminDashboard() {
 
         <div className="bg-white p-4 rounded-xl shadow">
 
-          <table className="w-full text-sm">
+          {filter(listed).map(t => (
+            <div
+              key={t.ticketNumber}
+              className="flex justify-between border-b py-2"
+            >
+              <input
+                type="checkbox"
+                checked={selectedListed.includes(t.ticketNumber)}
+                onChange={() =>
+                  toggle(t.ticketNumber, selectedListed, setSelectedListed)
+                }
+              />
 
-            <thead>
-              <tr className="border-b">
-                <th>Select</th>
-                <th>Ticket</th>
-                <th>Category</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filter(listed).map(t => (
-                <tr key={t.ticketNumber} className="border-b">
-
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedListed.includes(t.ticketNumber)}
-                      onChange={() =>
-                        toggle(
-                          t.ticketNumber,
-                          selectedListed,
-                          setSelectedListed
-                        )
-                      }
-                    />
-                  </td>
-
-                  <td>{t.ticketNumber}</td>
-                  <td>{t.category}</td>
-
-                </tr>
-              ))}
-            </tbody>
-
-          </table>
+              <span>{t.ticketNumber}</span>
+              <span>{t.category}</span>
+            </div>
+          ))}
 
           <button
-            className="bg-yellow-500 text-white px-6 py-2 rounded mt-4"
+            className="bg-yellow-500 text-white w-full py-3 rounded mt-4"
             onClick={sell}
           >
             Sell Selected
@@ -241,7 +240,7 @@ export default function AdminDashboard() {
     <div className="p-4">
 
       <button
-        className="mb-4 text-white"
+        className="text-white mb-4"
         onClick={() => setPage("home")}
       >
         ← Back
@@ -251,7 +250,6 @@ export default function AdminDashboard() {
         Revert Tickets
       </h2>
 
-      {/* SEARCH */}
       <input
         className="border p-3 rounded w-full mb-4"
         placeholder="Search by number or category"
@@ -261,45 +259,26 @@ export default function AdminDashboard() {
 
       <div className="bg-white p-4 rounded-xl shadow">
 
-        <table className="w-full text-sm">
+        {filter(sold).map(t => (
+          <div
+            key={t.ticketNumber}
+            className="flex justify-between border-b py-2"
+          >
+            <input
+              type="checkbox"
+              checked={selectedSold.includes(t.ticketNumber)}
+              onChange={() =>
+                toggle(t.ticketNumber, selectedSold, setSelectedSold)
+              }
+            />
 
-          <thead>
-            <tr className="border-b">
-              <th>Select</th>
-              <th>Ticket</th>
-              <th>Category</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filter(sold).map(t => (
-              <tr key={t.ticketNumber} className="border-b">
-
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={selectedSold.includes(t.ticketNumber)}
-                    onChange={() =>
-                      toggle(
-                        t.ticketNumber,
-                        selectedSold,
-                        setSelectedSold
-                      )
-                    }
-                  />
-                </td>
-
-                <td>{t.ticketNumber}</td>
-                <td>{t.category}</td>
-
-              </tr>
-            ))}
-          </tbody>
-
-        </table>
+            <span>{t.ticketNumber}</span>
+            <span>{t.category}</span>
+          </div>
+        ))}
 
         <button
-          className="bg-orange-600 text-white px-6 py-2 rounded mt-4"
+          className="bg-orange-600 text-white w-full py-3 rounded mt-4"
           onClick={revert}
         >
           Revert Selected
