@@ -15,18 +15,30 @@ export default function AdminDashboard() {
 
   const [search, setSearch] = useState("");
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
 
   // ================= LOAD =================
   const load = async () => {
 
-    const l = await axios.get(`${API}/admin/unsold`);
-    const s = await axios.get(`${API}/admin/sold`);
-    const st = await axios.get(`${API}/admin/stats`);
+    try {
+      setLoading(true);
 
-    setListed(l.data);
-    setSold(s.data);
-    setStats(st.data);
+      const [l, s, st] = await Promise.all([
+        axios.get(`${API}/admin/unsold`),
+        axios.get(`${API}/admin/sold`),
+        axios.get(`${API}/admin/stats`)
+      ]);
+
+      setListed(l.data || []);
+      setSold(s.data || []);
+      setStats(st.data || {});
+    } catch (err) {
+      console.error(err);
+      alert("Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -101,6 +113,14 @@ export default function AdminDashboard() {
   };
 
 
+  if (loading)
+    return (
+      <div className="text-white p-10 text-center">
+        Loading...
+      </div>
+    );
+
+
   // ================= HOME =================
   if (page === "home")
     return (
@@ -111,66 +131,63 @@ export default function AdminDashboard() {
         </h1>
 
         {/* 📊 STATS */}
-        {stats && (
-          <div className="bg-white p-6 rounded-xl shadow mb-6">
+        <div className="bg-white p-6 rounded-xl shadow mb-6">
 
-            <h2 className="font-bold mb-4">📊 Overview</h2>
+          <h2 className="font-bold mb-4">📊 Overview</h2>
 
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
 
-              <div className="bg-gray-100 p-4 rounded text-center">
-                <p>Listed</p>
-                <p className="text-2xl font-bold">{stats.listed}</p>
-              </div>
-
-              <div className="bg-yellow-200 p-4 rounded text-center">
-                <p>Sold</p>
-                <p className="text-2xl font-bold">{stats.sold}</p>
-              </div>
-
+            <div className="bg-gray-100 p-4 rounded text-center">
+              <p>Listed</p>
+              <p className="text-2xl font-bold">
+                {stats?.listed || 0}
+              </p>
             </div>
 
-            {/* Category wise */}
-            {/* LISTED CATEGORY */}
-            <div className="mt-6">
-
-              <h3 className="font-bold mb-2">
-                🎫 Listed Category Wise
-              </h3>
-
-              {stats.listedByCategory.map(c => (
-                <div
-                  key={c.category}
-                  className="flex justify-between border-b py-1"
-                >
-                  <span>{c.category}</span>
-                  <span>{c._count}</span>
-                </div>
-              ))}
-
-            </div>
-
-            {/* SOLD CATEGORY */}
-            <div className="mt-6">
-
-              <h3 className="font-bold mb-2">
-                💰 Sold Category Wise
-              </h3>
-
-              {stats.soldByCategory.map(c => (
-                <div
-                  key={c.category}
-                  className="flex justify-between border-b py-1"
-                >
-                  <span>{c.category}</span>
-                  <span>{c._count}</span>
-                </div>
-              ))}
-
+            <div className="bg-yellow-200 p-4 rounded text-center">
+              <p>Sold</p>
+              <p className="text-2xl font-bold">
+                {stats?.sold || 0}
+              </p>
             </div>
 
           </div>
-        )}
+
+          {/* LISTED CATEGORY */}
+          <div className="mt-6">
+            <h3 className="font-bold mb-2">
+              🎫 Listed Category Wise
+            </h3>
+
+            {(stats?.listedByCategory || []).map(c => (
+              <div
+                key={c.category}
+                className="flex justify-between border-b py-1"
+              >
+                <span>{c.category}</span>
+                <span>{c._count}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* SOLD CATEGORY */}
+          <div className="mt-6">
+            <h3 className="font-bold mb-2">
+              💰 Sold Category Wise
+            </h3>
+
+            {(stats?.soldByCategory || []).map(c => (
+              <div
+                key={c.category}
+                className="flex justify-between border-b py-1"
+              >
+                <span>{c.category}</span>
+                <span>{c._count}</span>
+              </div>
+            ))}
+          </div>
+
+        </div>
 
         {/* 📥 EXCEL */}
         <button
@@ -215,13 +232,9 @@ export default function AdminDashboard() {
           ← Back
         </button>
 
-        <h2 className="text-2xl text-white font-bold mb-4">
-          Sell Tickets
-        </h2>
-
         <input
           className="border p-3 rounded w-full mb-4"
-          placeholder="Search by number or category"
+          placeholder="Search..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -270,13 +283,9 @@ export default function AdminDashboard() {
         ← Back
       </button>
 
-      <h2 className="text-2xl text-white font-bold mb-4">
-        Revert Tickets
-      </h2>
-
       <input
         className="border p-3 rounded w-full mb-4"
-        placeholder="Search by number or category"
+        placeholder="Search..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
