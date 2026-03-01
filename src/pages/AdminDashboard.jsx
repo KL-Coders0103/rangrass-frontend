@@ -185,7 +185,7 @@ export default function AdminDashboard() {
       <div className="p-4">
 
         <button
-          className="text-white mb-4"
+          className="text-black mb-4"
           onClick={() => setPage("home")}
         >
           ← Back
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
     <div className="p-4">
 
       <button
-        className="text-white mb-4"
+        className="text-black mb-4"
         onClick={() => setPage("home")}
       >
         ← Back
