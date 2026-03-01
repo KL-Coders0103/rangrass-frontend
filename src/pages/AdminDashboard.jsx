@@ -159,11 +159,11 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="font-bold mb-4">🎫 Listed Category Wise</h2>
 
-            {(stats?.byCategory || []).length === 0 &&
+            {(stats?.listedByCategory || []).length === 0 &&
               <p className="text-gray-400">No data</p>
             }
 
-            {(stats?.byCategory || []).map(c => (
+            {(stats?.listedByCategory || []).map(c => (
               <div
                 key={c.category}
                 className="flex justify-between bg-gray-100 p-2 rounded mb-2"
@@ -178,11 +178,11 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="font-bold mb-4">💰 Sold Category Wise</h2>
 
-            {(stats?.byCategory || []).length === 0 &&
+            {(stats?.soldByCategory || []).length === 0 &&
               <p className="text-gray-400">No data</p>
             }
 
-            {(stats?.byCategory || []).map(c => (
+            {(stats?.soldByCategory || []).map(c => (
               <div
                 key={c.category}
                 className="flex justify-between bg-yellow-100 p-2 rounded mb-2"
