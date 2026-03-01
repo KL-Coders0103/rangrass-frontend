@@ -131,10 +131,14 @@ export default function AdminDashboard() {
             </div>
 
             {/* Category wise */}
+            {/* LISTED CATEGORY */}
             <div className="mt-6">
-              <h3 className="font-bold mb-2">Category Wise</h3>
 
-              {stats.byCategory.map(c => (
+              <h3 className="font-bold mb-2">
+                🎫 Listed Category Wise
+              </h3>
+
+              {stats.listedByCategory.map(c => (
                 <div
                   key={c.category}
                   className="flex justify-between border-b py-1"
@@ -143,6 +147,26 @@ export default function AdminDashboard() {
                   <span>{c._count}</span>
                 </div>
               ))}
+
+            </div>
+
+            {/* SOLD CATEGORY */}
+            <div className="mt-6">
+
+              <h3 className="font-bold mb-2">
+                💰 Sold Category Wise
+              </h3>
+
+              {stats.soldByCategory.map(c => (
+                <div
+                  key={c.category}
+                  className="flex justify-between border-b py-1"
+                >
+                  <span>{c.category}</span>
+                  <span>{c._count}</span>
+                </div>
+              ))}
+
             </div>
 
           </div>
