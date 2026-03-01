@@ -231,64 +231,7 @@ export default function AdminDashboard() {
 
 
   // ================= SELL PAGE =================
-  if (page === "sell")
-    return (
-      <div className="min-h-screen bg-gray-50 p-6">
-
-        <button
-          className="mb-6 text-blue-600 font-semibold"
-          onClick={() => setPage("home")}
-        >
-          ← Back
-        </button>
-
-        <h2 className="text-2xl font-bold mb-4">Sell Tickets</h2>
-
-        <input
-          className="border p-3 rounded w-full mb-4"
-          placeholder="Search by ticket or category"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
-        <div className="bg-white rounded-xl shadow divide-y">
-
-          {filter(listed).length === 0 &&
-            <p className="p-4 text-gray-400">No tickets found</p>
-          }
-
-          {filter(listed).map(t => (
-            <div
-              key={t.ticketNumber}
-              className="flex justify-between items-center p-3"
-            >
-              <input
-                type="checkbox"
-                checked={selectedListed.includes(t.ticketNumber)}
-                onChange={() =>
-                  toggle(t.ticketNumber, selectedListed, setSelectedListed)
-                }
-              />
-
-              <span className="font-medium items-center">{t.ticketNumber}</span>
-              <span className="text-gray-500">{t.category}</span>
-            </div>
-          ))}
-
-        </div>
-
-        <button
-          className="bg-yellow-500 text-white w-full py-4 rounded-xl mt-6 font-bold"
-          onClick={sell}
-        >
-          Sell Selected
-        </button>
-
-      </div>
-    );
-
-
-  // ================= REVERT PAGE =================
+if (page === "sell")
   return (
     <div className="min-h-screen bg-gray-50 p-6">
 
@@ -299,26 +242,127 @@ export default function AdminDashboard() {
         ← Back
       </button>
 
-      <h2 className="text-2xl font-bold mb-4">Revert Tickets</h2>
+      <h2 className="text-2xl font-bold mb-4">
+        💰 Sell Tickets
+      </h2>
 
+      {/* SEARCH */}
       <input
         className="border p-3 rounded w-full mb-4"
-        placeholder="Search by ticket or category"
+        placeholder="Search ticket or category..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="bg-white rounded-xl shadow divide-y">
+      {/* TABLE */}
+      <div className="bg-white rounded-xl shadow overflow-hidden">
 
-        {filter(sold).length === 0 &&
-          <p className="p-4 text-gray-400">No tickets found</p>
-        }
+        {/* HEADER */}
+        <div className="grid grid-cols-3 bg-gray-200 font-semibold p-3">
+          <span>Select</span>
+          <span>Ticket No</span>
+          <span>Category</span>
+        </div>
 
-        {filter(sold).map(t => (
+        {/* BODY */}
+        {(filter(listed).length === 0) ? (
+          <p className="p-6 text-center text-gray-400">
+            No tickets found
+          </p>
+        ) : (
+          filter(listed).map((t, i) => (
+            <div
+              key={t.ticketNumber}
+              className={`grid grid-cols-3 items-center p-3 border-t
+                ${selectedListed.includes(t.ticketNumber)
+                  ? "bg-yellow-100"
+                  : i % 2 === 0 ? "bg-gray-50" : ""
+                }`}
+            >
+
+              <input
+                type="checkbox"
+                checked={selectedListed.includes(t.ticketNumber)}
+                onChange={() =>
+                  toggle(t.ticketNumber, selectedListed, setSelectedListed)
+                }
+              />
+
+              <span className="font-medium">
+                {t.ticketNumber}
+              </span>
+
+              <span className="text-gray-600">
+                {t.category}
+              </span>
+
+            </div>
+          ))
+        )}
+
+      </div>
+
+      {/* ACTION BUTTON */}
+      <button
+        className="bg-yellow-500 hover:bg-yellow-600 text-white w-full py-4 rounded-xl mt-6 font-bold text-lg shadow"
+        onClick={sell}
+      >
+        Sell Selected Tickets
+      </button>
+
+    </div>
+  );
+
+
+  // ================= REVERT PAGE =================
+return (
+  <div className="min-h-screen bg-gray-50 p-6">
+
+    <button
+      className="mb-6 text-blue-600 font-semibold"
+      onClick={() => setPage("home")}
+    >
+      ← Back
+    </button>
+
+    <h2 className="text-2xl font-bold mb-4">
+      🔄 Revert Sold Tickets
+    </h2>
+
+    {/* SEARCH */}
+    <input
+      className="border p-3 rounded w-full mb-4"
+      placeholder="Search ticket or category..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+
+    {/* TABLE */}
+    <div className="bg-white rounded-xl shadow overflow-hidden">
+
+      {/* HEADER */}
+      <div className="grid grid-cols-3 bg-gray-200 font-semibold p-3">
+        <span>Select</span>
+        <span>Ticket No</span>
+        <span>Category</span>
+      </div>
+
+      {/* BODY */}
+      {(filter(sold).length === 0) ? (
+        <p className="p-6 text-center text-gray-400">
+          No tickets found
+        </p>
+      ) : (
+        filter(sold).map((t, i) => (
           <div
             key={t.ticketNumber}
-            className="flex justify-between items-center p-3"
+            className={`grid grid-cols-3 items-center p-3 border-t
+              ${selectedSold.includes(t.ticketNumber)
+                ? "bg-orange-100"
+                : i % 2 === 0 ? "bg-gray-50" : ""
+              }`}
           >
+
             <input
               type="checkbox"
               checked={selectedSold.includes(t.ticketNumber)}
@@ -327,20 +371,28 @@ export default function AdminDashboard() {
               }
             />
 
-            <span className="font-medium">{t.ticketNumber}</span>
-            <span className="text-gray-500">{t.category}</span>
+            <span className="font-medium">
+              {t.ticketNumber}
+            </span>
+
+            <span className="text-gray-600">
+              {t.category}
+            </span>
+
           </div>
-        ))}
-
-      </div>
-
-      <button
-        className="bg-orange-600 text-white w-full py-4 rounded-xl mt-6 font-bold"
-        onClick={revert}
-      >
-        Revert Selected
-      </button>
+        ))
+      )}
 
     </div>
-  );
+
+    {/* ACTION BUTTON */}
+    <button
+      className="bg-orange-600 hover:bg-orange-700 text-white w-full py-4 rounded-xl mt-6 font-bold text-lg shadow"
+      onClick={revert}
+    >
+      Revert Selected Tickets
+    </button>
+
+  </div>
+);
 }
