@@ -115,8 +115,8 @@ export default function AdminDashboard() {
 
   if (loading)
     return (
-      <div className="text-white p-10 text-center">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center text-xl font-semibold">
+        Loading Dashboard...
       </div>
     );
 
@@ -124,94 +124,104 @@ export default function AdminDashboard() {
   // ================= HOME =================
   if (page === "home")
     return (
-      <div className="p-4">
+      <div className="min-h-screen bg-gray-50 p-6">
 
-        <h1 className="text-3xl text-white font-bold mb-6">
+        <h1 className="text-4xl font-bold mb-8 text-center">
           👑 Admin Control Panel
         </h1>
 
-        {/* 📊 STATS */}
-        <div className="bg-white p-6 rounded-xl shadow mb-6">
+        {/* ===== OVERVIEW ===== */}
 
-          <h2 className="font-bold mb-4">📊 Overview</h2>
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
 
-          <div className="grid grid-cols-2 gap-4">
-
-            <div className="bg-gray-100 p-4 rounded text-center">
-              <p>Listed</p>
-              <p className="text-2xl font-bold">
-                {stats?.listed || 0}
-              </p>
-            </div>
-
-            <div className="bg-yellow-200 p-4 rounded text-center">
-              <p>Sold</p>
-              <p className="text-2xl font-bold">
-                {stats?.sold || 0}
-              </p>
-            </div>
-
+          <div className="bg-white rounded-xl shadow p-6 text-center">
+            <p className="text-gray-500">Listed Tickets</p>
+            <p className="text-5xl font-bold mt-2">
+              {stats?.listed || 0}
+            </p>
           </div>
 
-          {/* LISTED CATEGORY */}
-          <div className="mt-6">
-            <h3 className="font-bold mb-2">
-              🎫 Listed Category Wise
-            </h3>
+          <div className="bg-yellow-300 rounded-xl shadow p-6 text-center">
+            <p className="text-gray-700">Sold Tickets</p>
+            <p className="text-5xl font-bold mt-2">
+              {stats?.sold || 0}
+            </p>
+          </div>
+
+        </div>
+
+
+        {/* ===== CATEGORY SECTIONS ===== */}
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+
+          {/* Listed */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-bold mb-4">🎫 Listed Category Wise</h2>
+
+            {(stats?.listedByCategory || []).length === 0 &&
+              <p className="text-gray-400">No data</p>
+            }
 
             {(stats?.listedByCategory || []).map(c => (
               <div
                 key={c.category}
-                className="flex justify-between border-b py-1"
+                className="flex justify-between bg-gray-100 p-2 rounded mb-2"
               >
                 <span>{c.category}</span>
-                <span>{c._count}</span>
+                <span className="font-bold">{c._count}</span>
               </div>
             ))}
           </div>
 
-          {/* SOLD CATEGORY */}
-          <div className="mt-6">
-            <h3 className="font-bold mb-2">
-              💰 Sold Category Wise
-            </h3>
+          {/* Sold */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="font-bold mb-4">💰 Sold Category Wise</h2>
+
+            {(stats?.soldByCategory || []).length === 0 &&
+              <p className="text-gray-400">No data</p>
+            }
 
             {(stats?.soldByCategory || []).map(c => (
               <div
                 key={c.category}
-                className="flex justify-between border-b py-1"
+                className="flex justify-between bg-yellow-100 p-2 rounded mb-2"
               >
                 <span>{c.category}</span>
-                <span>{c._count}</span>
+                <span className="font-bold">{c._count}</span>
               </div>
             ))}
           </div>
 
         </div>
 
-        {/* 📥 EXCEL */}
+
+        {/* ===== EXCEL ===== */}
+
         <button
-          className="bg-blue-600 text-white w-full py-3 rounded mb-6"
           onClick={exportExcel}
+          className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold mb-8"
         >
           📥 Download Excel
         </button>
 
-        {/* NAV */}
-        <div className="grid grid-cols-2 gap-4">
+
+        {/* ===== ACTION BUTTONS ===== */}
+
+        <div className="grid md:grid-cols-2 gap-6">
 
           <button
-            className="bg-yellow-500 text-white py-6 rounded-xl text-xl font-bold"
             onClick={() => setPage("sell")}
+            className="bg-yellow-500 text-white py-6 rounded-xl text-xl font-bold"
           >
-            💰 SELL
+            💰 SELL TICKETS
           </button>
 
           <button
-            className="bg-orange-600 text-white py-6 rounded-xl text-xl font-bold"
             onClick={() => setPage("revert")}
+            className="bg-orange-600 text-white py-6 rounded-xl text-xl font-bold"
           >
-            🔄 REVERT
+            🔄 REVERT TICKETS
           </button>
 
         </div>
@@ -223,28 +233,34 @@ export default function AdminDashboard() {
   // ================= SELL PAGE =================
   if (page === "sell")
     return (
-      <div className="p-4">
+      <div className="min-h-screen bg-gray-50 p-6">
 
         <button
-          className="text-black mb-4"
+          className="mb-6 text-blue-600 font-semibold"
           onClick={() => setPage("home")}
         >
           ← Back
         </button>
 
+        <h2 className="text-2xl font-bold mb-4">Sell Tickets</h2>
+
         <input
           className="border p-3 rounded w-full mb-4"
-          placeholder="Search..."
+          placeholder="Search by ticket or category"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
-        <div className="bg-white p-4 rounded-xl shadow">
+        <div className="bg-white rounded-xl shadow divide-y">
+
+          {filter(listed).length === 0 &&
+            <p className="p-4 text-gray-400">No tickets found</p>
+          }
 
           {filter(listed).map(t => (
             <div
               key={t.ticketNumber}
-              className="flex justify-between border-b py-2"
+              className="flex justify-between items-center p-3"
             >
               <input
                 type="checkbox"
@@ -254,19 +270,19 @@ export default function AdminDashboard() {
                 }
               />
 
-              <span>{t.ticketNumber}</span>
-              <span>{t.category}</span>
+              <span className="font-medium">{t.ticketNumber}</span>
+              <span className="text-gray-500">{t.category}</span>
             </div>
           ))}
 
-          <button
-            className="bg-yellow-500 text-white w-full py-3 rounded mt-4"
-            onClick={sell}
-          >
-            Sell Selected
-          </button>
-
         </div>
+
+        <button
+          className="bg-yellow-500 text-white w-full py-4 rounded-xl mt-6 font-bold"
+          onClick={sell}
+        >
+          Sell Selected
+        </button>
 
       </div>
     );
@@ -274,28 +290,34 @@ export default function AdminDashboard() {
 
   // ================= REVERT PAGE =================
   return (
-    <div className="p-4">
+    <div className="min-h-screen bg-gray-50 p-6">
 
       <button
-        className="text-black mb-4"
+        className="mb-6 text-blue-600 font-semibold"
         onClick={() => setPage("home")}
       >
         ← Back
       </button>
 
+      <h2 className="text-2xl font-bold mb-4">Revert Tickets</h2>
+
       <input
         className="border p-3 rounded w-full mb-4"
-        placeholder="Search..."
+        placeholder="Search by ticket or category"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      <div className="bg-white p-4 rounded-xl shadow">
+      <div className="bg-white rounded-xl shadow divide-y">
+
+        {filter(sold).length === 0 &&
+          <p className="p-4 text-gray-400">No tickets found</p>
+        }
 
         {filter(sold).map(t => (
           <div
             key={t.ticketNumber}
-            className="flex justify-between border-b py-2"
+            className="flex justify-between items-center p-3"
           >
             <input
               type="checkbox"
@@ -305,19 +327,19 @@ export default function AdminDashboard() {
               }
             />
 
-            <span>{t.ticketNumber}</span>
-            <span>{t.category}</span>
+            <span className="font-medium">{t.ticketNumber}</span>
+            <span className="text-gray-500">{t.category}</span>
           </div>
         ))}
 
-        <button
-          className="bg-orange-600 text-white w-full py-3 rounded mt-4"
-          onClick={revert}
-        >
-          Revert Selected
-        </button>
-
       </div>
+
+      <button
+        className="bg-orange-600 text-white w-full py-4 rounded-xl mt-6 font-bold"
+        onClick={revert}
+      >
+        Revert Selected
+      </button>
 
     </div>
   );
