@@ -14,6 +14,10 @@ export default function AdminDashboard() {
   const [selectedSold, setSelectedSold] = useState([]);
 
   const [search, setSearch] = useState("");
+  const [ticketNumber, setTicketNumber] = useState("");
+const [category, setCategory] = useState("Gold");
+const [seriesStart, setSeriesStart] = useState("");
+const [seriesEnd, setSeriesEnd] = useState("");
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +66,37 @@ export default function AdminDashboard() {
     else
       setArr([...arr, num]);
   };
+
+  // ===== SINGLE TICKET =====
+const createSingle = async () => {
+
+  if (!ticketNumber) return alert("Enter ticket number");
+
+  await axios.post(`${API}/admin/create-single`, {
+    ticketNumber,
+    category
+  });
+
+  setTicketNumber("");
+  load();
+};
+
+// ===== SERIES TICKETS =====
+const createSeries = async () => {
+
+  if (!seriesStart || !seriesEnd)
+    return alert("Enter series range");
+
+  await axios.post(`${API}/admin/create-series`, {
+    start: seriesStart,
+    end: seriesEnd,
+    category
+  });
+
+  setSeriesStart("");
+  setSeriesEnd("");
+  load();
+};
 
 
   // ================= SELL =================
@@ -129,6 +164,73 @@ export default function AdminDashboard() {
         <h1 className="text-4xl font-bold mb-8 text-center">
           👑 Admin Control Panel
         </h1>
+
+        {/* ===== RAISE TICKETS ===== */}
+      <div className="bg-white rounded-xl shadow p-6 mb-8">
+
+        <h2 className="text-xl font-bold mb-4">
+          🎫 Raise Tickets
+        </h2>
+
+        {/* CATEGORY SELECT */}
+        <select
+          className="border p-3 rounded w-full mb-4"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option>Gold</option>
+          <option>VIP</option>
+          <option>Fanpit</option>
+          <option>Early Bird Gold</option>
+          <option>Early Bird Fanpit</option>
+        </select>
+
+        {/* SINGLE TICKET */}
+        <div className="grid md:grid-cols-2 gap-4 mb-4">
+
+          <input
+            className="border p-3 rounded"
+            placeholder="Single Ticket Number"
+            value={ticketNumber}
+            onChange={(e) => setTicketNumber(e.target.value)}
+          />
+
+          <button
+            className="bg-green-600 text-white rounded p-3 font-semibold"
+            onClick={createSingle}
+          >
+            Add Single Ticket
+          </button>
+
+        </div>
+
+        {/* SERIES TICKET */}
+        <div className="grid md:grid-cols-3 gap-4">
+
+          <input
+            className="border p-3 rounded"
+            placeholder="Series Start"
+            value={seriesStart}
+            onChange={(e) => setSeriesStart(e.target.value)}
+          />
+
+          <input
+            className="border p-3 rounded"
+            placeholder="Series End"
+            value={seriesEnd}
+            onChange={(e) => setSeriesEnd(e.target.value)}
+          />
+
+          <button
+            className="bg-purple-600 text-white rounded p-3 font-semibold"
+            onClick={createSeries}
+          >
+            Add Series Tickets
+          </button>
+
+        </div>
+
+      </div>
 
         {/* ===== OVERVIEW ===== */}
 
